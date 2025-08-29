@@ -1,0 +1,5 @@
+
+> queue-pianezza-full@1.0.0 start
+> node server.js
+
+Server avviato su http://localhost:8080
