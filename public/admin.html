@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin - Gestione code</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header"><h1>Gestione Code — Amministrazione</h1></div>
+    <div class="card">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+        <div class="badge">3 Sportelli</div>
+        <button onclick="resetAll()">Resetta tutto</button>
+      </div>
+      <div style="display:flex;gap:12px">
+        <div style="flex:1">
+          <h3>Code</h3>
+          <table class="table" id="queues"><thead><tr><th>Tipo</th><th>In coda</th></tr></thead><tbody></tbody></table>
+        </div>
+        <div style="width:320px">
+          <h3>Operazioni</h3>
+          <div style="display:grid;gap:8px">
+            <div><strong>Anagrafe (A)</strong><div style="margin-top:6px"><button onclick="next(1)">Chiama</button> <button onclick="recall(1)">Richiama</button> <button onclick="skip(1)">Salta</button></div></div>
+            <div><strong>Carte d'identita' (B)</strong><div style="margin-top:6px"><button onclick="next(2)">Chiama</button> <button onclick="recall(2)">Richiama</button> <button onclick="skip(2)">Salta</button></div></div>
+            <div><strong>Tributi (C)</strong><div style="margin-top:6px"><button onclick="next(3)">Chiama</button> <button onclick="recall(3)">Richiama</button> <button onclick="skip(3)">Salta</button></div></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <h3>Ora in servizio</h3>
+        <div style="display:flex;gap:12px">
+          <div class="card"><strong>Anagrafe</strong><div id="s1" class="num">--</div></div>
+          <div class="card"><strong>Carte d'identita'</strong><div id="s2" class="num">--</div></div>
+          <div class="card"><strong>Triubuti</strong><div id="s3" class="num">--</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Registro eventi (ultimi 20)</h3>
+      <ul id="log"></ul>
+    </div>
+  </div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+socket.on('state', render);
+socket.on('recall', info => {
+  flash(info.desk);
+});
+
+async function api(path, opts={}){
+  const res = await fetch(path, Object.assign({ headers: {'Content-Type':'application/json'} }, opts));
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+function render(s){
+  // queues
+  const tbody = document.querySelector('#queues tbody');
+  tbody.innerHTML = '';
+  ['A','B','C'].forEach(t => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${t}</td><td>${s.queues[t].map(x=>x.number).join(', ')}</td>`;
+    tbody.appendChild(tr);
+  });
+  // now serving
+  document.getElementById('s1').textContent = s.nowServing['1'] || '--';
+  document.getElementById('s2').textContent = s.nowServing['2'] || '--';
+  document.getElementById('s3').textContent = s.nowServing['3'] || '--';
+  // log
+  const log = document.getElementById('log');
+  log.innerHTML = '';
+  const recent = s.history.slice(-20).reverse();
+  recent.forEach(ev => {
+    const li = document.createElement('li');
+    const t = new Date(ev.ts).toLocaleTimeString();
+    li.textContent = `[${t}] ${ev.action}${ev.desk ? ' desk '+ev.desk : ''} ${ev.ticket?.number || ev.number || ''}`;
+    log.appendChild(li);
+  });
+}
+
+function flash(desk){
+  const el = document.getElementById('s'+desk);
+  el.style.transition = 'transform .15s ease';
+  el.style.transform = 'scale(1.08)';
+  setTimeout(()=>el.style.transform='',200);
+}
+
+async function next(desk){ await api('/api/next',{ method:'POST', body: JSON.stringify({ desk }) }); }
+async function recall(desk){ await api('/api/recall',{ method:'POST', body: JSON.stringify({ desk }) }); }
+async function skip(desk){ await api('/api/skip',{ method:'POST', body: JSON.stringify({ desk }) }); }
+async function resetAll(){ if(confirm('Confermi reset?')) await api('/api/reset',{ method:'POST' }); }
+</script>
+</body>
+</html>

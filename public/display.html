@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Display - Sala d'attesa</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .cards-row {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+    .num {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .flash {
+      transition: transform 0.15s;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header"><h1>Display Sala d'attesa</h1></div>
+    <div class="card" style="text-align:center">
+      <h2>Ora in servizio</h2>
+      <div class="cards-row">
+        <div class="card" style="width:220px">
+          <h3>Anagrafe</h3>
+          <div id="d1" class="num" aria-live="polite">--</div>
+        </div>
+        <div class="card" style="width:220px">
+          <h3>Carte d'identità</h3>
+          <div id="d2" class="num" aria-live="polite">--</div>
+        </div>
+        <div class="card" style="width:220px">
+          <h3>Tributi</h3>
+          <div id="d3" class="num" aria-live="polite">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  const s = io();
+
+  // Suoni per ogni sportello
+  const sounds = {
+    1: new Audio('anagrafe.mp3'),
+    2: new Audio('carta.mp3'),
+    3: new Audio('tributi.mp3')
+  };
+
+  s.on('state', st => {
+    document.getElementById('d1').textContent = st.nowServing['1'] || '--';
+    document.getElementById('d2').textContent = st.nowServing['2'] || '--';
+    document.getElementById('d3').textContent = st.nowServing['3'] || '--';
+  });
+
+  s.on('recall', info => {
+    const el = document.getElementById('d'+info.desk);
+
+    // Effetto visivo
+    el.classList.add('flash');
+    setTimeout(()=>el.classList.remove('flash'), 300);
+
+    // Suono dedicato per desk
+    const sound = sounds[info.desk];
+    if (sound) {
+      sound.currentTime = 0; // sempre dall’inizio
+      sound.play().catch(err => console.warn('Audio non riprodotto:', err));
+    }
+  });
+  </script>
+</body>
+</html>

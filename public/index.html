@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prendi numero - Comune di Pianezza</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header"><h1>Comune di Pianezza — Prendi il tuo numero</h1></div>
+    <div class="card">
+      <p class="small">Scegli il servizio e ritira il tuo tagliandino. Il biglietto include un QR code per verifica rapida.</p>
+      <div class="grid cols-3">
+        <div class="card">
+          <h3>Anagrafe</h3>
+          <button onclick="take('A')">Prendi A</button>
+        </div>
+        <div class="card">
+          <h3>Carte d'identita'</h3>
+          <button onclick="take('B')">Prendi B</button>
+        </div>
+        <div class="card">
+          <h3>Tributi</h3>
+          <button onclick="take('C')">Prendi C</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+async function api(path, opts={}){
+  const res = await fetch(path, Object.assign({ headers: {'Content-Type':'application/json'} }, opts));
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function take(type){
+  try{
+    const res = await api('/api/ticket', { method:'POST', body: JSON.stringify({ type }) });
+    const ticket = res.ticket;
+    // apri finestra per stampa
+    const w = window.open('', '_blank', 'width=420,height=640');
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${ticket.number}</title><link rel="stylesheet" href="styles.css"></head><body>
+      <div class="ticket">
+        <h2 style="text-align:center;color:#0b1d7a">Comune di Pianezza</h2>
+        <div class="num">${ticket.number}</div>
+        <img class="qr" src="${ticket.qr || ''}" alt="QR">
+        <div class="small" style="text-align:center">${new Date(ticket.createdAt).toLocaleString()}</div>
+        <div style="text-align:center;margin-top:12px" class="no-print"><button onclick="window.print()">Stampa</button></div>
+      </div></body></html>`);
+    w.document.close();
+    // richiesta fallback: se popup bloccato, mostra QR inline
+    if(!w) {
+      alert('Pop-up bloccato: apri il biglietto in una nuova finestra.');
+    }
+  }catch(e){
+    alert('Errore: '+e.message);
+  }
+}
+</script>
+</body>
+</html>
