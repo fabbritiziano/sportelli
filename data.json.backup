@@ -1,0 +1,114 @@
+{
+  "c      {
+        "id": "anagrafe",
+        "name": "Anagrafe",
+        "prefix": "A",
+        "password": "anagrafe123"
+      },
+      {
+        "id": "carta",
+        "name": "Carte d'Identità",
+        "prefix": "C",
+        "password": "carta123"
+      },
+      {
+        "id": "tributi",
+        "name": "Tributi",
+        "prefix": "T",
+        "password": "tributi123"
+      },
+      {
+        "id": "ufficio_4",
+        "name": "Edilizia Privata",
+        "prefix": "E",
+        "password": "edilizia123"
+      }": "https://www.comune.pianezza.to.it/it-it/vivere-il-comune/eventi",
+    "audioLang": "it-IT",
+    "autoCallNext": true,
+    "offices": [
+      {
+        "id": "anagrafe",
+        "name": "Anagrafe",
+        "prefix": "A"
+      },
+      {
+        "id": "carta",
+        "name": "Carte d’Identità",
+        "prefix": "C"
+      },
+      {
+        "id": "tributi",
+        "name": "Tributi",
+        "prefix": "T"
+      },
+      {
+        "id": "ufficio_4",
+        "name": "Edilizia Privata",
+        "prefix": "E"
+      }
+    ]
+  },
+  "queues": {
+    "anagrafe": {
+      "nextNumber": 3,
+      "waiting": [],
+      "current": {
+        "id": "A002",
+        "ts": 1756993639359
+      },
+      "served": [
+        {
+          "id": "A001",
+          "ts": 1756981787708
+        }
+      ],
+      "skipped": []
+    },
+    "carta": {
+      "nextNumber": 3,
+      "waiting": [],
+      "current": {
+        "id": "C002",
+        "ts": 1756993639876
+      },
+      "served": [
+        {
+          "id": "C001",
+          "ts": 1756981788742
+        }
+      ],
+      "skipped": []
+    },
+    "tributi": {
+      "nextNumber": 3,
+      "waiting": [
+        {
+          "id": "T001",
+          "ts": 1756981789827
+        },
+        {
+          "id": "T002",
+          "ts": 1756993640409
+        }
+      ],
+      "current": null,
+      "served": [],
+      "skipped": []
+    },
+    "ufficio_4": {
+      "nextNumber": 3,
+      "waiting": [],
+      "current": {
+        "id": "E002",
+        "ts": 1756993654510
+      },
+      "served": [
+        {
+          "id": "E001",
+          "ts": 1756993640993
+        }
+      ],
+      "skipped": []
+    }
+  }
+}

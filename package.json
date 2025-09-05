@@ -1,16 +1,13 @@
 {
-  "name": "queue-pianezza-full",
+  "name": "queue-app",
   "version": "1.0.0",
-  "description": "Sistema di numerazione per 3 sportelli con QR code e pannello admin (locale)",
+  "description": "Web app eliminacode con annuncio audio e pannelli admin/ufficio/totem/sala.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
-    "socket.io": "^4.7.5",
-    "cors": "^2.8.5",
-    "qrcode": "^1.5.1",
-    "body-parser": "^1.20.2"
+    "socket.io": "^4.7.5"
   }
 }
