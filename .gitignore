@@ -1,0 +1,5 @@
+# Node.js
+node_modules/
+server.log
+data.json.backup
+.env
