@@ -103,5 +103,5 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {});
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => { console.log(`Server avviato su http://localhost:${PORT}`); });
